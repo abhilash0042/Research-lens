@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResearchLens Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<div id="app">
+    <!-- Sidebar -->
+    <aside class="glass">
+        <div class="logo-container">
+            <i class="fa-solid fa-microscope fa-2x" style="color: #6c5ce7;"></i>
+            <h1>ResearchLens</h1>
+        </div>
+        
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Advanced Multi-Paper AI Assistant</p>
+
+        <div class="upload-section">
+            <div class="file-drop-area" id="drop-area">
+                <i class="fa-solid fa-cloud-arrow-up fa-2x" style="margin-bottom: 10px;"></i>
+                <p>Drag & Drop PDFs</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">or click to browse</p>
+                <input type="file" id="file-input" multiple accept=".pdf" style="display: none;">
+            </div>
+        </div>
+
+        <h3 style="font-size: 1rem; margin-top: 10px;">Loaded Papers</h3>
+        <div class="papers-list" id="papers-list">
+            <!-- Populated via JS -->
+            <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">No papers loaded.</div>
+        </div>
+
+        <button class="btn" style="background: transparent; border: 1px solid var(--glass-border); color: var(--text-main);" onclick="clearMemory()">
+            <i class="fa-solid fa-trash"></i> Clear Memory
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="glass">
+        <!-- Loader Overlay -->
+        <div id="loader">
+            <div class="spinner"></div>
+            <p id="loader-text">Processing...</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('chat')"><i class="fa-solid fa-comments"></i> Chat & RAG</button>
+            <button class="tab" onclick="switchTab('summaries')"><i class="fa-solid fa-file-lines"></i> Deep Summaries</button>
+            <button class="tab" onclick="switchTab('intelligence')"><i class="fa-solid fa-brain"></i> Multi-Paper Intelligence</button>
+        </div>
+
+        <!-- Tab 1: Chat -->
+        <div id="tab-chat" class="tab-content active">
+            <div class="chat-window" id="chat-window">
+                <div class="message assistant">
+                    Hello! I am ResearchLens. Upload some academic papers to the left, and ask me any questions about them. I will search across all documents and synthesize an answer with citations!
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Ask a question across all papers... (e.g. 'What methodology was used?')">
+                <button class="btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <!-- Tab 2: Summaries -->
+        <div id="tab-summaries" class="tab-content">
+            <h2 style="margin-bottom: 16px;">Detailed Paper Summaries</h2>
+            <select class="summary-selector" id="summary-selector">
+                <option value="">Select a paper...</option>
+            </select>
+            <button class="btn" onclick="generateSummary()">Generate Detailed Summary</button>
+            
+            <div class="dynamic-result glass" id="summary-result" style="display: none;">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+
+        <!-- Tab 3: Intelligence -->
+        <div id="tab-intelligence" class="tab-content">
+            <h2 style="margin-bottom: 16px;">Cross-Paper Synthesis</h2>
+            <p style="color: var(--text-muted); margin-bottom: 24px;">Use these advanced tools to synthesize knowledge across all loaded papers. Requires at least 2 papers.</p>
+            
+            <div class="grid-dashboard">
+                <div class="action-card glass" onclick="runIntelligence('compare')">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <h3>Compare Papers</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Generate a matrix comparing datasets, methods, and results.</p>
+                </div>
+                
+                <div class="action-card glass" onclick="runIntelligence('contradictions')">
+                    <i class="fa-solid fa-bolt"></i>
+                    <h3>Find Contradictions</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Detect conflicting claims between different studies.</p>
+                </div>
+                
+                <div class="action-card glass" onclick="runIntelligence('review')">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <h3>Write Lit Review</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Synthesize a unified literature review with citations.</p>
+                </div>
+                
+                <div class="action-card glass" onclick="runIntelligence('hypotheses')">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <h3>Auto-Hypotheses</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Analyze gaps to propose 3 novel research ideas.</p>
+                </div>
+            </div>
+            
+            <div class="dynamic-result glass" id="intel-result" style="display: none;">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
