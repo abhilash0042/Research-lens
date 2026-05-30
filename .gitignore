@@ -1,0 +1,25 @@
+# Added by code-review-graph
+.code-review-graph/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual Environment
+venv/
+env/
+
+# Data and Models
+data/
+models/
+
+# Secrets
+.env
+
+# IDE / Agent Config
+.claude/
+
+# Local MCP Tools
+code-review-graph/

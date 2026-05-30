@@ -1,0 +1,39 @@
+# PDF Processing
+PyMuPDF>=1.25.0
+pdfplumber>=0.11.0
+
+# ML / Embeddings
+sentence-transformers>=3.4.0
+transformers>=4.48.0
+torch>=2.4.0
+
+# Vector Search
+faiss-cpu>=1.9.0
+
+# Sparse Search
+rank-bm25>=0.2.2
+
+# NLP Utilities
+nltk>=3.9.0
+
+# App
+streamlit>=1.42.0
+
+# LLM APIs
+groq>=0.4.0
+
+# Datasets
+datasets==2.18.0
+
+# Additional / Fine-tuning Dependencies
+peft>=0.10.0
+bitsandbytes>=0.43.0
+accelerate>=0.27.0
+wandb>=0.16.0
+evaluate>=0.4.0
+bert-score>=0.3.13
+plotly>=5.19.0
+python-dotenv>=1.0.0
+loguru>=0.7.0
+scikit-learn>=1.4.0
+rouge-score>=0.1.2
