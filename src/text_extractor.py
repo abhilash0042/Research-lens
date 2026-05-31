@@ -78,12 +78,12 @@ def extract_metadata(filepath: str, pages: List[PageData]) -> PaperMetadata:
     doc = fitz.open(filepath)
     meta = doc.metadata
     
-    title = meta.get("title", "").strip()
-    authors = meta.get("author", "").strip()
+    title = (meta.get("title") or "").strip()
+    authors = (meta.get("author") or "").strip()
     year = ""
     
     # Try year from creationDate (format: D:YYYYMMDDHHmmSSZ)
-    cdate = meta.get("creationDate", "")
+    cdate = meta.get("creationDate") or ""
     if cdate and cdate.startswith("D:"):
         year = cdate[2:6]
         
@@ -130,7 +130,7 @@ def extract_metadata(filepath: str, pages: List[PageData]) -> PaperMetadata:
         title=title if title else "Unknown Title",
         authors=authors if authors else "Unknown Authors",
         year=year if year else "Unknown Year",
-        doi=meta.get("doi", "Unknown DOI"),
+        doi=meta.get("doi") or "Unknown DOI",
         n_pages=len(pages),
         filepath=filepath
     )
