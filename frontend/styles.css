@@ -184,7 +184,7 @@ main {
   flex-grow: 1;
   flex-direction: column;
   animation: fadeIn 0.4s ease forwards;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .tab-content.active {
@@ -286,7 +286,7 @@ main {
   padding: 24px;
   line-height: 1.6;
   overflow-y: auto;
-  max-height: 400px;
+  max-height: 60vh;
 }
 
 .dynamic-result h3 {

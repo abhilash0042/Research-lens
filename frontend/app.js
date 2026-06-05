@@ -262,11 +262,25 @@ async function runIntelligence(action) {
         
         if (!res.ok) throw new Error(data.detail);
 
-        resultDiv.innerHTML = '';
+        let closeBtnHtml = `<div style="text-align: right; margin-bottom: 10px;"><button onclick="document.getElementById('intel-result').style.display='none'" style="background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 6px 12px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-times"></i> Close</button></div>`;
+        resultDiv.innerHTML = closeBtnHtml;
 
         if (data.type === 'table') {
             let html = '<h3 style="color: var(--accent-color);"><i class="fa-solid fa-table"></i> Comparison Matrix</h3>';
             html += '<table style="width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem;">';
+            
+            if (data.data.length > 0) {
+                const firstRowValues = data.data[0].values;
+                const paperTitles = Array.isArray(firstRowValues) ? [] : Object.keys(firstRowValues);
+                
+                html += '<thead><tr><th style="border: 1px solid var(--glass-border); padding: 12px; text-align: left; background: rgba(0,0,0,0.4);">Dimension</th>';
+                paperTitles.forEach(title => {
+                    html += `<th style="border: 1px solid var(--glass-border); padding: 12px; text-align: left; background: rgba(0,0,0,0.4);">${title}</th>`;
+                });
+                html += '</tr></thead>';
+            }
+            
+            html += '<tbody>';
             data.data.forEach(row => {
                 html += '<tr>';
                 html += `<td style="border: 1px solid var(--glass-border); padding: 12px; font-weight: bold; background: rgba(0,0,0,0.2); width: 150px;">${row.dimension}</td>`;
@@ -276,8 +290,8 @@ async function runIntelligence(action) {
                 });
                 html += '</tr>';
             });
-            html += '</table>';
-            resultDiv.innerHTML = html;
+            html += '</tbody></table>';
+            resultDiv.innerHTML += html;
         }
         else if (data.type === 'contradictions') {
             let html = '<h3 style="color: var(--accent-color);"><i class="fa-solid fa-bolt"></i> Conflicting Claims Found</h3>';
@@ -294,16 +308,19 @@ async function runIntelligence(action) {
                     </div>`;
                 });
             }
-            resultDiv.innerHTML = html;
+            resultDiv.innerHTML += html;
         }
         else if (data.type === 'text') {
             let title = action === 'review' ? 'Synthesized Literature Review' : 'Novel Research Hypotheses';
             let parsed = marked.parse(data.data);
             parsed = formatCitations(parsed);
-            resultDiv.innerHTML = `<h3 style="color: var(--accent-color); margin-bottom: 16px;">${title}</h3>${parsed}`;
+            resultDiv.innerHTML += `<h3 style="color: var(--accent-color); margin-bottom: 16px;">${title}</h3>${parsed}`;
         }
 
         resultDiv.style.display = 'block';
+        setTimeout(() => {
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
 
     } catch (e) {
         alert("Error: " + e.message);
