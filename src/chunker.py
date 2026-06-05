@@ -22,8 +22,8 @@ def parent_child_chunk(
     section_meta: Dict[str, Any], 
     paper_id: str,
     parent_size: int = 1024, 
-    child_size: int = 256, 
-    overlap: int = 50,
+    child_size: int = 384, 
+    overlap: int = 128,
     start_chunk_index: int = 0
 ) -> tuple[List[ParentChunk], int]:
     

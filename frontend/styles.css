@@ -144,6 +144,7 @@ main {
   flex-direction: column;
   padding: 24px;
   position: relative;
+  overflow: hidden;
 }
 
 /* Tabs */
@@ -183,6 +184,7 @@ main {
   flex-grow: 1;
   flex-direction: column;
   animation: fadeIn 0.4s ease forwards;
+  overflow: hidden;
 }
 
 .tab-content.active {
@@ -229,6 +231,7 @@ main {
 .chat-input-container {
   display: flex;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .chat-input-container input {

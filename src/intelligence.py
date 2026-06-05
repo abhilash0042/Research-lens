@@ -13,7 +13,7 @@ from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 
 from src.utils import ChildChunk, PaperResult
-from src.models import get_embedder, get_groq_client
+from src.models import get_embedder, get_groq_client, call_groq_with_fallback
 
 log = logging.getLogger(__name__)
 
@@ -126,7 +126,8 @@ Guidelines:
     user_prompt = f"""CLAIM FROM "{paper_a}":\n{claim_a}\n\nCLAIM FROM "{paper_b}":\n{claim_b}"""
 
     try:
-        response = client.chat.completions.create(
+        response = call_groq_with_fallback(
+            client,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
@@ -207,7 +208,8 @@ Extract information for EACH paper along these dimensions. Respond in EXACTLY th
 ]"""
 
     try:
-        response = client.chat.completions.create(
+        response = call_groq_with_fallback(
+            client,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Compare these papers:\n{papers_block}"}
@@ -254,7 +256,8 @@ INSTRUCTIONS:
 4. Highlight agreements, differences, and gaps in the literature.{focus_instruction}"""
 
     try:
-        response = client.chat.completions.create(
+        response = call_groq_with_fallback(
+            client,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Write a literature review based on these papers:\n{papers_block}"}
@@ -273,8 +276,8 @@ INSTRUCTIONS:
 
 def summarize_paper(paper_result: PaperResult) -> PaperSummary:
     """Generate a detailed, structured summary of a single paper using Groq."""
-    # Expand to use a much larger portion of the paper (up to ~24k chars / ~6k tokens)
-    full_text = "\n".join([c.text for c in paper_result.children[:50]])[:24000]
+    # Keep within free tier Groq limits (6000 TPM limit). max_tokens=1500 + context ~3500 tokens = ~5000 total.
+    full_text = "\n".join([c.text for c in paper_result.children[:30]])[:14000]
 
     client = get_groq_client()
     system_prompt = """You are an expert at summarizing academic papers.
@@ -291,14 +294,16 @@ Respond in EXACTLY this JSON format (no markdown, no code fences):
 }"""
 
     try:
-        response = client.chat.completions.create(
+        response = call_groq_with_fallback(
+            client,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Paper title: {paper_result.metadata.title}\n\nPaper Content:\n{full_text}"}
             ],
             model="llama-3.1-8b-instant",
             temperature=0.2,
-            max_tokens=2000  # Increased heavily to allow for long summaries
+            max_tokens=1500,
+            response_format={"type": "json_object"}
         )
         content = response.choices[0].message.content
         
@@ -309,12 +314,20 @@ Respond in EXACTLY this JSON format (no markdown, no code fences):
             content = content.split("```")[1].strip()
             
         data = json.loads(content)
+        datasets_val = data.get("datasets", "Not specified")
+        if isinstance(datasets_val, list):
+            datasets_val = ", ".join(str(v) for v in datasets_val)
+        elif isinstance(datasets_val, dict):
+            datasets_val = ", ".join(f"{k}: {v}" for k, v in datasets_val.items())
+        else:
+            datasets_val = str(datasets_val)
+            
         return PaperSummary(
             title=paper_result.metadata.title,
             contribution=data.get("contribution", "Not available"),
             methodology=data.get("methodology", "Not available"),
             results=data.get("results", "Not available"),
-            datasets=data.get("datasets", "Not specified"),
+            datasets=datasets_val,
             limitations=data.get("limitations", "Not explicitly stated")
         )
     except Exception as e:
@@ -346,7 +359,8 @@ def extract_key_findings(paper_results: List[PaperResult]) -> Dict[str, List[str
         text = "\n".join([c.text for c in relevant_chunks[:10]])[:2500]
 
         try:
-            response = client.chat.completions.create(
+            response = call_groq_with_fallback(
+                client,
                 messages=[
                     {"role": "system", "content": "Extract top 3-5 key findings. Return as JSON list of strings. No markdown formatting."},
                     {"role": "user", "content": f"Paper: {title}\n\n{text}"}
@@ -396,7 +410,8 @@ Format your response as a numbered list with bold titles. For each hypothesis, e
 3. A brief experimental design to test it."""
 
     try:
-        response = client.chat.completions.create(
+        response = call_groq_with_fallback(
+            client,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Based on the following excerpts, propose 3 novel research hypotheses:\n\n{context[:15000]}"}

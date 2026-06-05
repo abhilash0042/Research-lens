@@ -92,8 +92,10 @@ def ask_question(query: str, unified_indices: List[UnifiedIndex], chat_history: 
     
     # 1. Search across all loaded papers
     all_candidates = []
+    # Dynamically scale top_k to prevent reranking too many chunks and slowing down processing
+    dynamic_top_k = max(3, 10 // len(unified_indices))
     for index in unified_indices:
-        candidates = hybrid_search(query, index, top_k=10)
+        candidates = hybrid_search(query, index, top_k=dynamic_top_k)
         all_candidates.extend(candidates)
         
     if not all_candidates:

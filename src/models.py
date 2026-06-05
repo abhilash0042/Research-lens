@@ -83,6 +83,21 @@ def get_groq_client() -> Groq:
     return _groq_client
 
 
+def call_groq_with_fallback(client, **kwargs):
+    """Wrapper to automatically retry with the fallback API key if a token expires or rate limit is hit."""
+    try:
+        return client.chat.completions.create(**kwargs)
+    except Exception as e:
+        error_msg = str(e).lower()
+        if "429" in error_msg or "401" in error_msg or "rate limit" in error_msg or "expire" in error_msg or "insufficient_quota" in error_msg:
+            fallback_key = os.getenv("GROQ_API_KEY_FALLBACK")
+            if fallback_key:
+                log.warning(f"Primary Groq key failed ({e}), trying fallback.")
+                fallback_client = Groq(api_key=fallback_key)
+                return fallback_client.chat.completions.create(**kwargs)
+        raise e
+
+
 def generate_cited_answer(question: str, context: str, model: str = "llama-3.1-8b-instant", chat_history: List[Dict[str, str]] = None) -> str:
     """
     Uses Groq (Llama-3) to generate an answer based purely on the retrieved context.
@@ -96,9 +111,10 @@ def generate_cited_answer(question: str, context: str, model: str = "llama-3.1-8
 Your task is to answer the user's question ONLY using the provided SOURCE chunks.
 
 CRITICAL INSTRUCTIONS:
-1. Do not use outside knowledge. If the answer is not in the sources, say: "Not found in the provided papers."
-2. Every factual claim MUST include a citation using the exact format: [SOURCE N: paper_title, section].
-3. Be precise, specific, and concise.
+1. Do not use outside knowledge. However, carefully deduce implicit information from the sources (e.g. if the user asks for 'data set' and the text mentions data sources, corpus, or collections used for experiments, identify them). If the answer is truly not present, say: "Not found in the provided papers."
+2. Account for typos or abbreviations in the user's query (e.g. 'wt' means 'what', 'ds' means 'dataset').
+3. Every factual claim MUST include a citation using the exact format: [SOURCE N: paper_title, section].
+4. Be precise, specific, and concise.
 
 EXAMPLES:
 Question: How many patients were in the study?
@@ -119,7 +135,8 @@ QUESTION: {question}"""
     messages.append({"role": "user", "content": user_prompt})
 
     try:
-        response = client.chat.completions.create(
+        response = call_groq_with_fallback(
+            client,
             messages=messages,
             model=model,
             temperature=0.1,
