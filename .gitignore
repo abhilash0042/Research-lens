@@ -23,3 +23,8 @@ models/
 
 # Local MCP Tools
 code-review-graph/
+
+# Test Outputs and Logs
+*.jsonl
+test_out.txt
+*.zip

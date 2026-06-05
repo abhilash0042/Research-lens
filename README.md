@@ -46,7 +46,8 @@ Using one giant model (like GPT-4) is expensive, un-tunable, and prone to "lost 
 
 ## Tech Stack
 
-- **UI:** Streamlit
+- **Backend:** FastAPI
+- **Frontend:** Vanilla HTML/CSS/JS
 - **PDF Parsing:** PyMuPDF (`fitz`) + `pdfplumber`
 - **Retrieval:** FAISS (Dense) + rank-bm25 (Sparse)
 - **LLM Pipeline:** Hugging Face `transformers`, `sentence-transformers`, `peft` (LoRA), `bitsandbytes` (4-bit NF4)
@@ -66,8 +67,20 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # 4. Launch the application
-streamlit run app.py
+python -m src.server
 ```
+
+## Deployment (Render, Railway, Heroku)
+
+This application is ready to be deployed directly from GitHub to native Python PaaS providers.
+
+1. Create a new "Web Service" on [Render](https://render.com) (or similar platform).
+2. Connect your GitHub repository.
+3. Use the following settings:
+   - **Environment:** `Python`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `uvicorn src.server:app --host 0.0.0.0 --port $PORT` (or let the platform use the included `Procfile` automatically).
+4. **Environment Variables:** Add `GROQ_API_KEY` and `GROQ_API_KEY_FALLBACK` in your deployment dashboard (see `.env.example`).
 
 ## Project Structure
 

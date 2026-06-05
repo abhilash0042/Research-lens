@@ -16,8 +16,10 @@ rank-bm25>=0.2.2
 # NLP Utilities
 nltk>=3.9.0
 
-# App
-streamlit>=1.42.0
+# App / Server
+fastapi>=0.103.0
+uvicorn[standard]>=0.23.0
+python-multipart>=0.0.6
 
 # LLM APIs
 groq>=0.4.0
