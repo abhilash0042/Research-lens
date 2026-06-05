@@ -70,17 +70,17 @@ pip install -r requirements.txt
 python -m src.server
 ```
 
-## Deployment (Render, Railway, Heroku)
+## Deployment (Hugging Face Spaces)
 
-This application is ready to be deployed directly from GitHub to native Python PaaS providers.
+This application can be deployed as a **Docker Space** on Hugging Face. Hugging Face offers a free CPU tier with **16GB RAM**, which is ideal for the memory-intensive local models used by this project.
 
-1. Create a new "Web Service" on [Render](https://render.com) (or similar platform).
-2. Connect your GitHub repository.
-3. Use the following settings:
-   - **Environment:** `Python`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `uvicorn src.server:app --host 0.0.0.0 --port $PORT` (or let the platform use the included `Procfile` automatically).
-4. **Environment Variables:** Add `GROQ_API_KEY` and `GROQ_API_KEY_FALLBACK` in your deployment dashboard (see `.env.example`).
+1. Go to Hugging Face and create a new **Space**.
+2. Set the **Space name** and choose **Docker** as the SDK (select **Blank** template or Python template).
+3. Choose the **Public** or **Private** visibility as desired.
+4. Clone your Space repository locally or link it to your GitHub repository.
+5. Hugging Face requires the container to run on port `7860` under user ID `1000`, which is already configured in the provided `Dockerfile`.
+6. Add your API keys (`GROQ_API_KEY` and `GROQ_API_KEY_FALLBACK`) under the **Variables and Secrets** tab in your Space settings.
+7. Push these files to the Hugging Face repository or trigger a rebuild via your Git integration. Hugging Face will build the Docker container and deploy the app automatically!
 
 ## Project Structure
 
