@@ -127,7 +127,9 @@ def summarize(req: SummarizeRequest):
 def run_intelligence(req: IntelligenceRequest):
     """Run cross-paper analytics."""
     prs = list(GLOBAL_STATE["paper_results"].values())
-    if len(prs) < 2 and req.action != "hypotheses": # Hypotheses can run on 1 paper technically
+    if not prs:
+        raise HTTPException(status_code=400, detail="Please upload at least 1 paper first.")
+    if len(prs) < 2 and req.action != "hypotheses":
         raise HTTPException(status_code=400, detail="Please upload at least 2 papers for cross-paper intelligence.")
         
     try:
@@ -157,15 +159,22 @@ def run_intelligence(req: IntelligenceRequest):
             
         else:
             raise HTTPException(status_code=400, detail="Unknown action")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/clear")
 def clear_memory():
-    """Clear all loaded papers."""
+    """Clear all loaded papers and their disk indices."""
     GLOBAL_STATE["unified_indices"].clear()
     GLOBAL_STATE["paper_results"].clear()
+    # Clean up disk indices to free storage
+    indices_dir = "data/indices"
+    if os.path.exists(indices_dir):
+        shutil.rmtree(indices_dir)
+        os.makedirs(indices_dir, exist_ok=True)
     return {"success": True}
 
 

@@ -30,6 +30,12 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy the rest of the application files
 COPY --chown=user . .
 
+# Ensure runtime data directories exist and are writable
+RUN mkdir -p data/indices && chown -R user:user data
+
+# Switch to non-root user (required by Hugging Face)
+USER user
+
 # Expose port 7860 (Hugging Face standard)
 EXPOSE 7860
 

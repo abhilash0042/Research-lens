@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // --- Tab Navigation ---
-function switchTab(tabId) {
+function switchTab(tabId, event) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     

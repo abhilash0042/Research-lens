@@ -18,6 +18,16 @@ from src.models import get_embedder, get_groq_client, call_groq_with_fallback
 log = logging.getLogger(__name__)
 
 
+def _safe_parse_json(text: str):
+    """Parse JSON from LLM output, stripping markdown fences if present."""
+    text = text.strip()
+    if "```json" in text:
+        text = text.split("```json")[1].split("```")[0].strip()
+    elif "```" in text:
+        text = text.split("```")[1].split("```")[0].strip()
+    return json.loads(text)
+
+
 # ─── Data structures ─────────────────────────────────────────────────────────
 
 @dataclass
@@ -136,7 +146,7 @@ Guidelines:
             temperature=0.0,
             max_tokens=200
         )
-        return json.loads(response.choices[0].message.content)
+        return _safe_parse_json(response.choices[0].message.content)
     except Exception as e:
         log.warning(f"Contradiction classification failed: {e}")
         return {"verdict": "unrelated", "explanation": "Failed to parse LLM response."}
@@ -218,7 +228,7 @@ Extract information for EACH paper along these dimensions. Respond in EXACTLY th
             temperature=0.1,
             max_tokens=1500
         )
-        rows_data = json.loads(response.choices[0].message.content)
+        rows_data = _safe_parse_json(response.choices[0].message.content)
         return [ComparisonRow(dimension=r["dimension"], values=r["values"]) for r in rows_data]
     except Exception as e:
         log.warning(f"Comparison table generation failed: {e}")
@@ -369,7 +379,7 @@ def extract_key_findings(paper_results: List[PaperResult]) -> Dict[str, List[str
                 temperature=0.1,
                 max_tokens=400
             )
-            findings[title] = json.loads(response.choices[0].message.content)
+            findings[title] = _safe_parse_json(response.choices[0].message.content)
         except Exception:
             findings[title] = ["Could not extract findings."]
 
