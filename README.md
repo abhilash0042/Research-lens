@@ -1,3 +1,13 @@
+---
+title: Research Lens
+emoji: 🏃
+colorFrom: indigo
+colorTo: green
+sdk: docker
+pinned: false
+license: mit
+---
+
 # ResearchLens 🔍
 
 An intelligent, fully local, multi-paper research assistant that reads academic PDFs, summarizes them, and answers precise questions with citations—powered by four specialized, fine-tuned transformers.
