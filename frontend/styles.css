@@ -347,3 +347,38 @@ main {
   background: var(--bg-gradient);
   color: var(--text-main);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    overflow: auto;
+  }
+  
+  #app {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+  
+  aside {
+    width: 100%;
+  }
+  
+  main {
+    height: auto;
+    overflow: visible;
+  }
+  
+  .tab-content {
+    overflow-y: visible;
+  }
+  
+  .grid-dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabs {
+    flex-wrap: wrap;
+  }
+}
