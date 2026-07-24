@@ -267,15 +267,15 @@ async function runIntelligence(action) {
 
         if (data.type === 'table') {
             let html = '<h3 style="color: var(--accent-color);"><i class="fa-solid fa-table"></i> Comparison Matrix</h3>';
-            html += '<table style="width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem;">';
+            html += '<div class="table-wrapper"><table class="comparison-table">';
             
             if (data.data.length > 0) {
                 const firstRowValues = data.data[0].values;
                 const paperTitles = Array.isArray(firstRowValues) ? [] : Object.keys(firstRowValues);
                 
-                html += '<thead><tr><th style="border: 1px solid var(--glass-border); padding: 12px; text-align: left; background: rgba(0,0,0,0.4);">Dimension</th>';
+                html += '<thead><tr><th>Dimension</th>';
                 paperTitles.forEach(title => {
-                    html += `<th style="border: 1px solid var(--glass-border); padding: 12px; text-align: left; background: rgba(0,0,0,0.4);">${title}</th>`;
+                    html += `<th>${title}</th>`;
                 });
                 html += '</tr></thead>';
             }
@@ -283,14 +283,14 @@ async function runIntelligence(action) {
             html += '<tbody>';
             data.data.forEach(row => {
                 html += '<tr>';
-                html += `<td style="border: 1px solid var(--glass-border); padding: 12px; font-weight: bold; background: rgba(0,0,0,0.2); width: 150px;">${row.dimension}</td>`;
+                html += `<td class="dimension-cell">${row.dimension}</td>`;
                 const values = Array.isArray(row.values) ? row.values : Object.values(row.values);
                 values.forEach(val => {
-                    html += `<td style="border: 1px solid var(--glass-border); padding: 12px;">${val}</td>`;
+                    html += `<td>${val}</td>`;
                 });
                 html += '</tr>';
             });
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             resultDiv.innerHTML += html;
         }
         else if (data.type === 'contradictions') {
