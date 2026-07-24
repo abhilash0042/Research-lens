@@ -3,7 +3,7 @@ title: Research Lens
 emoji: 🏃
 colorFrom: indigo
 colorTo: green
-sdk: docker
+sdk: gradio
 pinned: false
 license: mit
 ---
