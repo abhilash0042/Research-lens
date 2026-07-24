@@ -285,8 +285,6 @@ main {
   margin-top: 24px;
   padding: 24px;
   line-height: 1.6;
-  overflow-y: auto;
-  max-height: 60vh;
 }
 
 .dynamic-result h3 {
@@ -385,7 +383,8 @@ main {
 
 /* Comparison Table Styles */
 .table-wrapper {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 55vh;
   margin-top: 16px;
   border-radius: 12px;
   border: 1px solid var(--glass-border);
