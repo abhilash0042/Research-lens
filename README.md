@@ -82,15 +82,15 @@ python -m src.server
 
 ## Deployment (Hugging Face Spaces)
 
-This application can be deployed as a **Docker Space** on Hugging Face. Hugging Face offers a free CPU tier with **16GB RAM**, which is ideal for the memory-intensive local models used by this project.
+You can deploy this application completely free of charge on Hugging Face Spaces using their **Gradio SDK** (which allows custom Python scripts) to access their Free 16GB RAM tier.
 
 1. Go to Hugging Face and create a new **Space**.
-2. Set the **Space name** and choose **Docker** as the SDK (select **Blank** template or Python template).
-3. Choose the **Public** or **Private** visibility as desired.
-4. Clone your Space repository locally or link it to your GitHub repository.
-5. Hugging Face requires the container to run on port `7860` under user ID `1000`, which is already configured in the provided `Dockerfile`.
-6. Add your API keys (`GROQ_API_KEY` and `GROQ_API_KEY_FALLBACK`) under the **Variables and Secrets** tab in your Space settings.
-7. Push these files to the Hugging Face repository or trigger a rebuild via your Git integration. Hugging Face will build the Docker container and deploy the app automatically!
+2. Set the **Space name** and choose **Gradio** as the SDK (select the **Blank** template).
+3. Connect your GitHub repository to pull in the code, or clone the space and push the code directly.
+4. Go to your Space **Settings**, scroll to **Variables and Secrets**, and add your API keys:
+   - `GROQ_API_KEY`
+   - `GROQ_API_KEY_FALLBACK`
+5. The Space will automatically run `app.py` on startup, which will launch the FastAPI backend on port 7860 (Hugging Face's expected port) and serve the UI!
 
 ## Project Structure
 
